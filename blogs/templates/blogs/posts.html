@@ -1,0 +1,50 @@
+{% extends "base.html"%}
+{% load static %}
+{% block page_title %}
+
+   {{ post.title }}
+{% endblock %}
+{% block body_content %}   
+   <section>
+      <h2>{{ post.title }}</h2>
+      <div>
+         {% for tag in tags %}
+             <span>{{ tag }}</span>
+         {% endfor %}
+      </div>
+      <article>
+         <img src="{% static 'blogs/images/'|add:post.image %}" alt="{{ post.title }}" />
+         <address>By<a href="mailto:  {{ post.author.email_addr }}" > {{ post.author }}</a></address>
+         <div>Posted on <time> {{ post.date|date:"d M Y" }} </time></div>
+      </article>
+   </section>
+   
+   <main>
+      <p>{{ post.content }}</p>
+   </main>
+   <section>
+      <ul>
+         {% for comment in comments %}
+            <li>
+               <h2>
+                  {{ comment.comment_text }}
+               </h2>
+               <p>By {{ comment.user_name }}</p>
+               
+            </li>
+         {% endfor %}   
+      </ul>
+   </section>
+
+   <section>
+      <h2>Comments</h2>
+      <form action ="{% url 'blog-post' post.slug %}" method="POST">
+         {% csrf_token %}
+         {{ comment_form }}
+         
+         <button>Save</button>
+      </form>
+      
+   </section>
+
+{% endblock %}

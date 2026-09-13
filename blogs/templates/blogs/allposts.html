@@ -1,21 +1,60 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block css_files %}
-   <link rel="stylesheet" href="{% static 'blogs/app.css' %}">
-{% endblock %}
+{% block title %}All Posts | Chronicle{% endblock %}
 
-{% block page_title %}
-   All Posts
-{% endblock %}
+{% block content %}
+<div class="space-y-10">
+  <!-- Page Heading -->
+  <div class="border-b border-zinc-200 pb-6 dark:border-zinc-800">
+    <h1 class="text-3xl font-extrabold tracking-tight text-zinc-950 dark:text-white sm:text-4xl">All Articles</h1>
+    <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">A comprehensive index of everything published.</p>
+  </div>
 
-{% block body_content %} 
-    <section>
-       <h2>All my posts</h2>
-       <ul>
-        {% for blog in blogs %}
-              {% include 'blogs/includes/posts.html' %}
-        {% endfor %}    
-      </ul>
-    </section>
+  <!-- Articles Grid -->
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {% for post in blogs %}
+      <article class="group flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+        <!-- Post Thumbnail -->
+        <div class="aspect-video w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+          <img 
+            src="{% static 'blogs/images/' %}{{ post.image }}" 
+            alt="{{ post.title }}" 
+            class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            onerror="this.src='https://placehold.co/600x340/18181b/a1a1aa?text=Post+Image';"
+          >
+        </div>
+
+        <div class="flex flex-1 flex-col p-6">
+          <!-- Tags -->
+          <div class="mb-3 flex flex-wrap gap-1.5">
+            {% for tag in post.tags.all %}
+              <span class="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                {{ tag.caption }}
+              </span>
+            {% endfor %}
+          </div>
+
+          <!-- Title & Link -->
+          <h2 class="text-lg font-bold tracking-tight text-zinc-900 transition group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
+            <a href="{% url 'blog-post' post.slug %}">{{ post.title }}</a>
+          </h2>
+
+          <!-- Excerpt -->
+          <p class="mt-2 line-clamp-3 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {{ post.preview }}
+          </p>
+
+          <!-- Metadata Footer -->
+          <div class="mt-auto flex items-center justify-between border-t border-zinc-100 pt-4 text-xs text-zinc-400 dark:border-zinc-800/80">
+            <span class="font-medium text-zinc-700 dark:text-zinc-300">{{ post.author.get_full_name|default:"Editorial" }}</span>
+            <time datetime="{{ post.date|date:'Y-m-d' }}">{{ post.date|date:"M j, Y" }}</time>
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <p class="col-span-full py-12 text-center text-zinc-500 dark:text-zinc-400">No entries in the archive.</p>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}
